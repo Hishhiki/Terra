@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package terra;
+
+message ChatRequest {
+    string query = 1;
+    repeated string chat_history = 2;
+}
+
+message ChatChunkResponse {
+    string token = 1;
+    bool is_final = 2;
+    repeated string sources = 3;
+}
+
+message DocumentUploadRequest {
+    string filename = 1;
+    string content = 2;
+}
+
+message DocumentUploadResponse {
+    bool success = 1;
+    int32 chunks_indexed = 2;
+    string message = 3;
+}
+
+service TerraService {
+    rpc StreamChat (ChatRequest) returns (stream ChatChunkResponse);
+    rpc IndexDocument (DocumentUploadRequest) returns (DocumentUploadResponse);
+}
