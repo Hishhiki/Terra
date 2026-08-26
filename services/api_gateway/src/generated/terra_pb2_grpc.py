@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import terra_pb2 as terra__pb2
+from . import terra_pb2 as terra__pb2
 
 GRPC_GENERATED_VERSION = '1.83.0'
 GRPC_VERSION = grpc.__version__
@@ -11,7 +11,8 @@ _version_not_supported = False
 
 try:
     from grpc._utilities import first_version_is_lower
-    _version_not_supported = first_version_is_lower(GRPC_VERSION, GRPC_GENERATED_VERSION)
+    _version_not_supported = first_version_is_lower(
+        GRPC_VERSION, GRPC_GENERATED_VERSION)
 except ImportError:
     _version_not_supported = True
 
@@ -35,15 +36,15 @@ class TerraServiceStub:
             channel: A grpc.Channel.
         """
         self.StreamChat = channel.unary_stream(
-                '/terra.TerraService/StreamChat',
-                request_serializer=terra__pb2.ChatRequest.SerializeToString,
-                response_deserializer=terra__pb2.ChatChunkResponse.FromString,
-                _registered_method=True)
+            '/terra.TerraService/StreamChat',
+            request_serializer=terra__pb2.ChatRequest.SerializeToString,
+            response_deserializer=terra__pb2.ChatChunkResponse.FromString,
+            _registered_method=True)
         self.IndexDocument = channel.unary_unary(
-                '/terra.TerraService/IndexDocument',
-                request_serializer=terra__pb2.DocumentUploadRequest.SerializeToString,
-                response_deserializer=terra__pb2.DocumentUploadResponse.FromString,
-                _registered_method=True)
+            '/terra.TerraService/IndexDocument',
+            request_serializer=terra__pb2.DocumentUploadRequest.SerializeToString,
+            response_deserializer=terra__pb2.DocumentUploadResponse.FromString,
+            _registered_method=True)
 
 
 class TerraServiceServicer:
@@ -64,38 +65,40 @@ class TerraServiceServicer:
 
 def add_TerraServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'StreamChat': grpc.unary_stream_rpc_method_handler(
-                    servicer.StreamChat,
-                    request_deserializer=terra__pb2.ChatRequest.FromString,
-                    response_serializer=terra__pb2.ChatChunkResponse.SerializeToString,
-            ),
-            'IndexDocument': grpc.unary_unary_rpc_method_handler(
-                    servicer.IndexDocument,
-                    request_deserializer=terra__pb2.DocumentUploadRequest.FromString,
-                    response_serializer=terra__pb2.DocumentUploadResponse.SerializeToString,
-            ),
+        'StreamChat': grpc.unary_stream_rpc_method_handler(
+            servicer.StreamChat,
+            request_deserializer=terra__pb2.ChatRequest.FromString,
+            response_serializer=terra__pb2.ChatChunkResponse.SerializeToString,
+        ),
+        'IndexDocument': grpc.unary_unary_rpc_method_handler(
+            servicer.IndexDocument,
+            request_deserializer=terra__pb2.DocumentUploadRequest.FromString,
+            response_serializer=terra__pb2.DocumentUploadResponse.SerializeToString,
+        ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'terra.TerraService', rpc_method_handlers)
+        'terra.TerraService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('terra.TerraService', rpc_method_handlers)
-
+    server.add_registered_method_handlers(
+        'terra.TerraService', rpc_method_handlers)
 
  # This class is part of an EXPERIMENTAL API.
+
+
 class TerraService:
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def StreamChat(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
+                   target,
+                   options=(),
+                   channel_credentials=None,
+                   call_credentials=None,
+                   insecure=False,
+                   compression=None,
+                   wait_for_ready=None,
+                   timeout=None,
+                   metadata=None):
         return grpc.experimental.unary_stream(
             request,
             target,
@@ -114,15 +117,15 @@ class TerraService:
 
     @staticmethod
     def IndexDocument(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
+                      target,
+                      options=(),
+                      channel_credentials=None,
+                      call_credentials=None,
+                      insecure=False,
+                      compression=None,
+                      wait_for_ready=None,
+                      timeout=None,
+                      metadata=None):
         return grpc.experimental.unary_unary(
             request,
             target,
