@@ -6,7 +6,6 @@
 [![gRPC](https://img.shields.io/badge/gRPC-HTTP%2F2-244c5a?logo=grpc&logoColor=white)](https://grpc.io/)
 [![ChromaDB](https://img.shields.io/badge/Vector_DB-ChromaDB-FC521F)](https://www.trychroma.com/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 **Terra** is a high-performance, microservice-based enterprise search and question-answering platform powered by **Local RAG (Retrieval-Augmented Generation)** over **gRPC (HTTP/2)** with real-time streaming and complete data privacy.
 
