@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # 1. Сервис машинного обучения (gRPC Server)
+  ml_engine:
+    build:
+      context: .
+      dockerfile: services/ml_engine/Dockerfile
+    container_name: terra_ml_engine
+    restart: unless-stopped
+    ports:
+      - "50051:50051"
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    volumes:
+      - ./chroma_db:/app/chroma_db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # 2. Веб-шлюз и сайт (FastAPI Gateway)
+  api_gateway:
+    build:
+      context: .
+      dockerfile: services/api_gateway/Dockerfile
+    container_name: terra_api_gateway
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - GRPC_TARGET=ml_engine:50051
+    depends_on:
+      - ml_engine
+
+networks:
+  default:
+    name: terra_network

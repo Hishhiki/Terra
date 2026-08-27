@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terra — Enterprise AI Knowledge Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-sidebar: #1e293b;
+            --bg-chat: #090d16;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --border: #334155;
+            --user-bubble: #1e293b;
+            --bot-bubble: #1e293b;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-main);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* САЙДБАР */
+        .sidebar {
+            width: 320px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            font-size: 11px;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 2px 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        /* ЗОНА ЗАГРУЗКИ */
+        .dropzone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            background: rgba(15, 23, 42, 0.4);
+        }
+
+        .dropzone:hover,
+        .dropzone.dragover {
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .dropzone p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .doc-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .doc-item {
+            background: var(--bg-card);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* ОСНОВНОЙ ЧАТ */
+        .main-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-chat);
+            height: 100vh;
+        }
+
+        .chat-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+        }
+
+        .bubble {
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 14.5px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .message.user .bubble {
+            background: #0284c7;
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot .bubble {
+            background: var(--bot-bubble);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+        }
+
+        .sources-box {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            color: var(--accent);
+        }
+
+        .source-tag {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 4px;
+            margin-right: 4px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        /* ПОЛЕ ВВОДА */
+        .input-area {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-main);
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-area textarea {
+            flex: 1;
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-size: 14px;
+            resize: none;
+            height: 48px;
+            outline: none;
+        }
+
+        .input-area textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .send-btn {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+            border-radius: 10px;
+            padding: 0 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .send-btn:hover {
+            background: var(--accent-hover);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- САЙДБАР: ЗАГРУЗКА ДОКУМЕНТОВ -->
+    <div class="sidebar">
+        <div class="logo">
+            <span>TERRA</span>
+            <span class="badge">gRPC + RAG</span>
+        </div>
+
+        <div class="dropzone" id="dropzone">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <p><strong>Перетащите файл</strong> или нажмите для выбора (PDF, TXT)</p>
+            <input type="file" id="fileInput" class="file-input" accept=".pdf,.txt">
+        </div>
+
+        <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Загруженные
+            документы:</div>
+        <div class="doc-list" id="docList">
+            <!-- Список документов -->
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ ЧАТ -->
+    <div class="main-chat">
+        <div class="chat-header">
+            <div><strong>Корпоративный AI-ассистент</strong></div>
+            <div style="font-size: 13px; color: var(--text-muted);">
+                <span class="status-dot"></span>Qwen 2.5 (Local gRPC)
+            </div>
+        </div>
+
+        <div class="messages-container" id="messagesContainer">
+            <div class="message bot">
+                <div class="bubble">Привет! Я корпоративный AI-ассистент Terra. Загрузи документ компании слева или
+                    задай мне любой вопрос по базе знаний!</div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <textarea id="queryInput"
+                placeholder="Задайте вопрос по документам компании... (Enter для отправки)"></textarea>
+            <button class="send-btn" id="sendBtn">Отправить</button>
+        </div>
+    </div>
+
+    <script>
+        const messagesContainer = document.getElementById('messagesContainer');
+        const queryInput = document.getElementById('queryInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        const docList = document.getElementById('docList');
+
+        // ЗАГРУЗКА ФАЙЛОВ
+        dropzone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => handleUpload(e.target.files[0]));
+
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault(); dropzone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) handleUpload(e.dataTransfer.files[0]);
+        });
+
+        async function handleUpload(file) {
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const docItem = document.createElement('div');
+            docItem.className = 'doc-item';
+            docItem.innerHTML = `<span>${file.name}</span><span style="color: var(--accent);">Загрузка...</span>`;
+            docList.appendChild(docItem);
+
+            try {
+                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.success) {
+                    docItem.innerHTML = `<span>${file.name}</span><span style="color: var(--success);">✓ ${data.chunks_indexed} чанков</span>`;
+                } else {
+                    docItem.innerHTML = `<span>${file.name}</span><span style="color: #ef4444;">Ошибка</span>`;
+                }
+            } catch (err) {
+                docItem.innerHTML = `<span>${file.name}</span><span style="color: #ef4444;">Ошибка сети</span>`;
+            }
+        }
+
+        // ОТПРАВКА СООБЩЕНИЯ И ЖИВОЙ СТРИМИНГ
+        async function sendMessage() {
+            const query = queryInput.value.trim();
+            if (!query) return;
+
+            // 1. Сообщение пользователя
+            appendMessage('user', query);
+            queryInput.value = '';
+
+            // 2. Пузырь ответа бота
+            const botBubble = appendMessage('bot', '');
+
+            try {
+                const response = await fetch('/api/chat/stream', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let fullText = '';
+                let sources = [];
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const jsonStr = line.replace('data: ', '').trim();
+                            if (!jsonStr) continue;
+                            try {
+                                const payload = JSON.parse(jsonStr);
+                                if (payload.token) {
+                                    fullText += payload.token;
+                                    botBubble.innerText = fullText;
+                                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                                }
+                                if (payload.is_final && payload.sources && payload.sources.length) {
+                                    sources = payload.sources;
+                                }
+                            } catch (e) { }
+                        }
+                    }
+                }
+
+                // Добавляем сноски источников
+                if (sources.length) {
+                    const srcBox = document.createElement('div');
+                    srcBox.className = 'sources-box';
+                    srcBox.innerHTML = '<strong>Первоисточники:</strong><br>' +
+                        sources.map(s => `<span class="source-tag">📄 ${s}</span>`).join('');
+                    botBubble.appendChild(srcBox);
+                }
+
+            } catch (err) {
+                botBubble.innerText = 'Ошибка соединения с сервером.';
+            }
+        }
+
+        function appendMessage(role, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${role}`;
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.innerText = text;
+            msgDiv.appendChild(bubble);
+            messagesContainer.appendChild(msgDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return bubble;
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        queryInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+
+</html>

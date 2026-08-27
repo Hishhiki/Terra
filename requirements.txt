@@ -1,9 +1,21 @@
-# Ядро gRPC и бинарная сериализация Protobuf
+# gRPC и Protobuf
 grpcio>=1.68.0
 grpcio-tools>=1.68.0
 protobuf>=5.29.0
+
+# LLM и векторная база
 ollama>=0.4.0
 chromadb>=0.6.0
-# Валидация данных и вспомогательные утилиты
+
+# Веб-сервер FastAPI
+fastapi>=0.115.0
+uvicorn>=0.32.0
+python-multipart>=0.0.18
+
+# Чтение документов (PDF и DOCX)
+pypdf>=5.1.0
+python-docx>=1.1.2
+
+# Валидация
 pydantic>=2.10.0
 rich>=13.9.0
