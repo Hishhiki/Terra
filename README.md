@@ -136,5 +136,3 @@ Access the interactive web application at `http://localhost:8000`
 ## Author
 - **GitHub:** [@Hishhiki](https://github.com/Hishhiki)
 
-## License
-This project is open-source and licensed under the [MIT License](LICENSE).
